@@ -2,7 +2,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Ml.Cli.WebApp.Server;
+using Ml.Cli.WebApp.Server.Datasets;
 using Ml.Cli.WebApp.Server.Datasets.Database.FileStorage;
 using Ml.Cli.WebApp.Server.Projects.Cmd;
 using Ml.Cli.WebApp.Server.Projects.Database;
@@ -20,7 +22,8 @@ public class DeleteProjectShould
     {
         var (mockedFileService, mockedBlobService) = InitServices();
         var mockedResult = await DatasetMock.InitMockAsync(nameIdentifier, mockedFileService);
-        var deleteProjectCmd = new ExportThenDeleteProjectCmd(mockedResult.UsersRepository, mockedResult.ProjectsRepository, mockedResult.DatasetsRepository, mockedResult.AnnotationsRepository, mockedResult.DeleteRepository, mockedBlobService, mockedResult.GroupRepository);
+        var options = Options.Create(new DatasetsSettings() { IsBlobTransferActive = true});
+        var deleteProjectCmd = new ExportThenDeleteProjectCmd(mockedResult.UsersRepository, mockedResult.ProjectsRepository, mockedResult.DatasetsRepository, mockedResult.AnnotationsRepository, mockedResult.DeleteRepository, mockedBlobService, mockedResult.GroupRepository, options);
         var result = await mockedResult.ProjectsController.Delete(deleteProjectCmd, mockedResult.Dataset3Project1Id);
         var resultOk = result as OkResult;
         Assert.NotNull(resultOk);
@@ -33,7 +36,8 @@ public class DeleteProjectShould
     {
         var (mockedFileService, mockedBlobService) = InitServices();
         var mockedResult = await DatasetMock.InitMockAsync(nameIdentifier, mockedFileService);
-        var deleteProjectCmd = new ExportThenDeleteProjectCmd(mockedResult.UsersRepository, mockedResult.ProjectsRepository, mockedResult.DatasetsRepository, mockedResult.AnnotationsRepository, mockedResult.DeleteRepository, mockedBlobService, mockedResult.GroupRepository);
+        var options = Options.Create(new DatasetsSettings() { IsBlobTransferActive = true});
+        var deleteProjectCmd = new ExportThenDeleteProjectCmd(mockedResult.UsersRepository, mockedResult.ProjectsRepository, mockedResult.DatasetsRepository, mockedResult.AnnotationsRepository, mockedResult.DeleteRepository, mockedBlobService, mockedResult.GroupRepository, options);
         var result = await mockedResult.ProjectsController.Delete(deleteProjectCmd, isProjectKnown ? mockedResult.Dataset3Project1Id : new Guid().ToString());
         var resultKo = result as BadRequestObjectResult;
         Assert.NotNull(resultKo);

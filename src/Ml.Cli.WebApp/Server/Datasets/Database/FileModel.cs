@@ -26,7 +26,7 @@ public class FileModel
     public string ContentType { get; set; }
 
     [Column("FLE_CreatorNameIdentifier")]
-    [MaxLength(32)]
+    [MaxLength(64)]
     [MinLength(1)]
     public string CreatorNameIdentifier { get; set; }
 

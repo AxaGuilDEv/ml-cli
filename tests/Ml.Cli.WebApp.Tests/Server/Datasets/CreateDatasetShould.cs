@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Ml.Cli.WebApp.Server;
+using Ml.Cli.WebApp.Server.Datasets;
 using Ml.Cli.WebApp.Server.Datasets.Cmd;
 using Ml.Cli.WebApp.Server.Datasets.Database;
 using Ml.Cli.WebApp.Server.Datasets.Database.FileStorage;
@@ -52,9 +54,10 @@ public class CreateDatasetShould
     {
         var mockResult = await DatasetMock.InitMockAsync(nameIdentifier, fileServiceObject);
         var datasetsController = mockResult.DatasetsController;
-
+    
+        var options = Options.Create(new DatasetsSettings() { IsBlobTransferActive = true});
         var createDatasetCmd = new CreateDatasetCmd(mockResult.GroupRepository, mockResult.DatasetsRepository,
-            mockResult.UsersRepository);
+            mockResult.UsersRepository, options);
         var result = await datasetsController.Create(createDatasetCmd, new DatasetInput
         {
             Classification = classification,

@@ -15,7 +15,7 @@ public record SaveAnnotationInput
     public string ProjectId { get; set; }
     public string AnnotationId { get; set; }
     public string FileId { get; set; }
-    [MaxLength(32)]
+    [MaxLength(64)]
     [MinLength(1)]
     public string CreatorNameIdentifier { get; set; }
 }

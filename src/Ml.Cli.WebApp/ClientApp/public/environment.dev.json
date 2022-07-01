@@ -2,13 +2,14 @@
   "apiUrl": "https://localhost:5001/api/server/{path}",
   "baseUrl": "",
   "oidc": {
+    "mode": "Default",
     "configuration": {
       "client_id": "interactive.public.short",
       "redirect_uri": "https://localhost:5001/authentication/callback",
       "silent_redirect_uri": "https://localhost:5001/authentication/silent-callback",
       "post_logout_redirect_uri": "https://localhost:5001/authentication/logout",
       "scope": "openid profile email api offline_access",
-      "authority": "https://demo.identityserver.io",
+      "authority": "https://demo.duendesoftware.com",
       "service_worker_relative_url":"/OidcServiceWorker.js",
       "service_worker_only": true
     }
@@ -19,6 +20,7 @@
     "active": false
   },
   "datasets": {
+    "isBlobTransferActive": false,
     "reserveHttpCallInParallel": 2,
     "reserveBeforeEndIndex": 10
   }

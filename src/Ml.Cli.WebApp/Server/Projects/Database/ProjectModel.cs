@@ -29,7 +29,7 @@ public class ProjectModel
     public string LabelsJson { get; set; }
 
     [Column("PRJ_CreatorNameIdentifier")]
-    [MaxLength(32)]
+    [MaxLength(64)]
     [MinLength(1)]
     public string CreatorNameIdentifier { get; set; }
 }

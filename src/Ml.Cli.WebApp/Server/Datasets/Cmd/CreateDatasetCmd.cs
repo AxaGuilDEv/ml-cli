@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Ml.Cli.WebApp.Server.Datasets.Database;
 using Ml.Cli.WebApp.Server.Groups.Database.Group;
 using Ml.Cli.WebApp.Server.Groups.Database.Users;
@@ -22,7 +23,7 @@ public record CreateDatasetCmdInput
     [RegularExpression("(?im)^[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$")]
     public string GroupId { get; set; }
 
-    [MaxLength(32)] [MinLength(1)] public string CreatorNameIdentifier { get; set; }
+    [MaxLength(64)] [MinLength(1)] public string CreatorNameIdentifier { get; set; }
     
     [MaxLength(256)]
     [MinLength(3)]
@@ -36,17 +37,20 @@ public class CreateDatasetCmd
     public const string UserNotInGroup = "UserNotInGroup";
     public const string UserNotFound = "UserNotFound";
     public const string GroupNotFound = "GroupNotFound";
+    public const string DatasetImportNotActivated = "DatasetImportNotActivated";
     private readonly DatasetsRepository _datasetsRepository;
 
     private readonly GroupsRepository _groupsRepository;
     private readonly UsersRepository _usersRepository;
+    private readonly IOptions<DatasetsSettings> _datasetsSettings;
 
     public CreateDatasetCmd(GroupsRepository groupsRepository, DatasetsRepository datasetsRepository,
-        UsersRepository usersRepository)
+        UsersRepository usersRepository, IOptions<DatasetsSettings> datasetsSettings)
     {
         _groupsRepository = groupsRepository;
         _datasetsRepository = datasetsRepository;
         _usersRepository = usersRepository;
+        _datasetsSettings = datasetsSettings;
     }
 
     public async Task<ResultWithError<string, ErrorResult>> ExecuteAsync(CreateDatasetCmdInput createDatasetInput)
@@ -55,6 +59,12 @@ public class CreateDatasetCmd
 
         var validationResult = new Validation().Validate(createDatasetInput);
         if (!validationResult.IsSuccess) return commandResult.ReturnError(InvalidModel, validationResult.Errors);
+
+        if (!_datasetsSettings.Value.IsBlobTransferActive &&
+            !string.IsNullOrEmpty(createDatasetInput.ImportedDatasetName))
+        {
+            return commandResult.ReturnError(DatasetImportNotActivated);
+        }
 
         var group = await _groupsRepository.GetGroupAsync(createDatasetInput.GroupId);
         if (group == null) return commandResult.ReturnError(GroupNotFound);

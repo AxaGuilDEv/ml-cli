@@ -19,6 +19,7 @@ import withCustomFetch from "../../../withCustomFetch";
 import compose from "../../../compose";
 import {fetchGroups} from "../../../Group/Group.service";
 import {telemetryEvents, withTelemetry} from "../../../Telemetry";
+import {withEnvironment} from "../../../EnvironmentProvider";
 
 const errorList = fields => Object.keys(fields).filter(key => setErrorMessage(key)(fields));
 
@@ -46,8 +47,8 @@ export const preInitState = {
       value: '',
       message: MSG_REQUIRED,
     },
-    [DATASETS_IMPORT]: {name: DATASETS_IMPORT, isChecked: true, message: ""},
-    [IMPORTED_DATASET_NAME]: {name: IMPORTED_DATASET_NAME, value: '', disabled: true, message: MSG_REQUIRED}
+    [DATASETS_IMPORT]: {name: DATASETS_IMPORT, isChecked: true, message: "", isVisible:false},
+    [IMPORTED_DATASET_NAME]: {name: IMPORTED_DATASET_NAME, value: '', disabled: true, message: MSG_REQUIRED, isVisible:false}
   },
 };
 
@@ -148,8 +149,15 @@ export const init = (fetch, dispatch) => async () => {
   dispatch( {type: 'init', data});
 };
 
-const useNew = (history, fetch, telemetry) => {
-  const [state, dispatch] = useReducer(reducer, initState);
+const useNew = (history, fetch, telemetry, environment) => {
+  let iniStateReducer = initState;
+  if(!environment.datasets.isBlobTransferActive) {
+    iniStateReducer={...initState,fields: {
+         ...initState.fields,
+        [DATASETS_IMPORT]: {name: DATASETS_IMPORT, isChecked: false, message: "", isVisible:false},
+        [IMPORTED_DATASET_NAME]: {name: IMPORTED_DATASET_NAME, value: '', disabled: true, message: MSG_REQUIRED, isVisible:false} }}
+  }
+  const [state, dispatch] = useReducer(reducer, iniStateReducer);
   const onChange = event => dispatch({ type: 'onChange', event });
   const onSubmit = async () => {
     const errors = errorList(state.fields);
@@ -164,7 +172,7 @@ const useNew = (history, fetch, telemetry) => {
         [CLASSIFICATION]: fields[CLASSIFICATION].value
       }
       if(fields[DATASETS_IMPORT].isChecked){
-        newDataset[IMPORTED_DATASET_NAME] = fields[IMPORTED_DATASET_NAME].value
+        newDataset[IMPORTED_DATASET_NAME] = fields[IMPORTED_DATASET_NAME].value;
       }
       const response = await fetchCreateDataset(fetch)(newDataset);
       if(response.status >= 500){
@@ -186,9 +194,9 @@ const useNew = (history, fetch, telemetry) => {
 
 const NewWithResilience = withResilience(New);
 
-export const NewContainer = ({ history, fetch, telemetry }) => {
-  const { state, onChange, onSubmit } = useNew(history, fetch, telemetry);
+export const NewContainer = ({ history, fetch, telemetry, environment }) => {
+  const { state, onChange, onSubmit } = useNew(history, fetch, telemetry, environment);
    return <NewWithResilience {...state} onChange={onChange} onSubmit={onSubmit}  />;
 };
-const enhance = compose(withCustomFetch(fetch), withRouter, withTelemetry);
+const enhance = compose(withCustomFetch(fetch), withRouter, withTelemetry, withEnvironment);
 export default enhance(NewContainer);

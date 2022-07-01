@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@axa-fr/react-oidc": "5.11.1",
+    "@axa-fr/react-oidc": "5.13.0-alpha0",
     "@axa-fr/react-toolkit-all": "1.4.1",
     "@microsoft/applicationinsights-web": "2.8.2",
     "@monaco-editor/react": "4.2.1",

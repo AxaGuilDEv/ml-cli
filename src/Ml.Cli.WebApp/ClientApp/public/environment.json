@@ -22,6 +22,6 @@
   "datasets": {
     "reserveHttpCallInParallel": #{Spa:Oidc:ReserveHttpCallInParallel}#,
     "reserveBeforeEndIndex": #{Spa:Oidc:ReserveBeforeEndIndex}#
+    "isBlobTransferActive": #{Spa:Datasets:IsBlobTransferActive}#
   }
 }
-

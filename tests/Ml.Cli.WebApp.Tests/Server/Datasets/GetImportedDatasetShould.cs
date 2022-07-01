@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using Ml.Cli.WebApp.Server.Datasets;
 using Ml.Cli.WebApp.Server.Datasets.Cmd;
 using Ml.Cli.WebApp.Server.Datasets.Database.FileStorage;
 using Moq;
@@ -19,9 +21,9 @@ public class GetImportedDatasetShould
         mockedTransferService.Setup(foo => foo.GetImportedDatasetsNamesAsync("azureblob://TransferFileStorage/input"))
             .ReturnsAsync(new List<string> { "group2/test1", "group2/test2", "group1/demo" });
         
-        
+        var options = Options.Create(new DatasetsSettings() { IsBlobTransferActive = true});
         var getImportedDatasetsCmd =
-            new GetImportedDatasetsCmd(mockResult.UsersRepository, mockedTransferService.Object, mockResult.DatasetsRepository);
+            new GetImportedDatasetsCmd(mockResult.UsersRepository, mockedTransferService.Object, mockResult.DatasetsRepository, options);
         var datasets = await mockResult.DatasetsController.GetImportedDatasets(getImportedDatasetsCmd);
         
         Assert.Equal(nbDatasets, datasets.Count);

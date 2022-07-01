@@ -32,7 +32,7 @@ public record UploadFileCmdInput
     [RegularExpression("(?im)^[{(]?[0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12}[)}]?$")]
     public string DatasetId { get; set; }
 
-    [MaxLength(32)] [MinLength(1)] public string NameIdentifier { get; set; }
+    [MaxLength(64)] [MinLength(1)] public string NameIdentifier { get; set; }
 }
 
 public class UploadFileCmd

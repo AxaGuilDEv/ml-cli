@@ -72,7 +72,8 @@ BEGIN
 CREATE TABLE [sch_ECOTAG].[T_User](
     [USR_Id] uniqueidentifier NOT NULL DEFAULT newid(),
     [USR_Email] [varchar](254) NOT NULL,
-    [USR_NameIdentifier] [varchar](32) NOT NULL,
+    [USR_NameIdentifier] [varchar](64) NOT NULL,
+    [USR_Role] [varchar](128) NULL,
     CONSTRAINT [PK_T_User] PRIMARY KEY NONCLUSTERED ([USR_Id]),
     CONSTRAINT [UK_T_User_Email] UNIQUE([USR_Email]),
     CONSTRAINT [UK_T_User_NameIdentifier] UNIQUE([USR_NameIdentifier])
@@ -87,7 +88,7 @@ BEGIN
 CREATE TABLE [sch_ECOTAG].[T_Group](
     [GRP_Id] uniqueidentifier NOT NULL DEFAULT newid(),
     [GRP_Name] [varchar](48) NOT NULL,
-    [GRP_CreatorNameIdentifier] [varchar](32) NOT NULL,
+    [GRP_CreatorNameIdentifier] [varchar](64) NOT NULL,
     [GRP_CreateDate] BIGINT NOT NULL,
     [GRP_UpdateDate] BIGINT NOT NULL,
     CONSTRAINT [PK_T_Group] PRIMARY KEY NONCLUSTERED ([GRP_Id]),
@@ -121,7 +122,7 @@ CREATE TABLE [sch_ECOTAG].[T_Dataset](
     [DTS_Type] int NOT NULL,
     [DTS_Classification] int NOT NULL,
     [GRP_Id] uniqueidentifier NOT NULL,
-    [DTS_CreatorNameIdentifier] [varchar](32) NOT NULL,
+    [DTS_CreatorNameIdentifier] [varchar](64) NOT NULL,
     [DTS_CreateDate] BIGINT NOT NULL,
     [DTS_Locked] int NULL,
     [DTS_BlobUri] [varchar](512) NOT NULL,
@@ -141,7 +142,7 @@ CREATE TABLE [sch_ECOTAG].[T_File](
     [FLE_Name] [varchar](1024) NOT NULL,
     [FLE_Size] BIGINT NOT NULL,
     [FLE_ContentType] [varchar](256) NOT NULL,
-    [FLE_CreatorNameIdentifier] [varchar](32) NOT NULL,
+    [FLE_CreatorNameIdentifier] [varchar](64) NOT NULL,
     [FLE_CreateDate] BIGINT NOT NULL,
     [DTS_Id] uniqueidentifier NOT NULL,
     CONSTRAINT [PK_T_File] PRIMARY KEY NONCLUSTERED ([FLE_Id]),
@@ -164,7 +165,7 @@ CREATE TABLE [sch_ECOTAG].[T_Project](
     [PRJ_CreateDate] BIGINT NOT NULL,
     [PRJ_AnnotationType] int NOT NULL,
     [PRJ_LabelsJson] [varchar](2048) NOT NULL,
-    [PRJ_CreatorNameIdentifier] [varchar](32) NOT NULL,
+    [PRJ_CreatorNameIdentifier] [varchar](64) NOT NULL,
     CONSTRAINT [PK_T_Project] PRIMARY KEY NONCLUSTERED ([PRJ_Id]),
     CONSTRAINT [FK_T_Project_GRP_Id] FOREIGN KEY (GRP_Id) REFERENCES [sch_ECOTAG].[T_Group] (GRP_Id),
     CONSTRAINT [FK_T_Project_DTS_Id] FOREIGN KEY (DTS_Id) REFERENCES [sch_ECOTAG].[T_Dataset] (DTS_Id)
@@ -196,7 +197,7 @@ CREATE TABLE [sch_ECOTAG].[T_Annotation](
     [ANO_Id] uniqueidentifier NOT NULL DEFAULT newid(),
     [FLE_Id] uniqueidentifier NOT NULL,
     [PRJ_Id] uniqueidentifier NOT NULL,
-    [ANO_CreatorNameIdentifier] [varchar](32) NOT NULL,
+    [ANO_CreatorNameIdentifier] [varchar](64) NOT NULL,
     [ANO_TimeStamp] BIGINT NOT NULL,
     [ANO_ExpectedOutput] [varchar](4048) NOT NULL,
     CONSTRAINT [PK_T_Annotation] PRIMARY KEY NONCLUSTERED ([ANO_Id]),
@@ -214,7 +215,7 @@ CREATE TABLE [sch_ECOTAG].[T_Audit](
     [AUD_Id] uniqueidentifier NOT NULL DEFAULT newid(),
     [AUD_ElementId] uniqueidentifier NOT NULL,
     [AUD_Type] [varchar](32) NOT NULL,
-    [AUD_NameIdentifier] [varchar](32) NOT NULL,
+    [AUD_NameIdentifier] [varchar](64) NOT NULL,
     [AUD_CreateDate] BIGINT NOT NULL,
     [AUD_Diff] [varchar](4048) NOT NULL,
     CONSTRAINT [PK_T_Audit] PRIMARY KEY NONCLUSTERED ([AUD_Id])
@@ -272,45 +273,6 @@ CREATE CLUSTERED INDEX [IND_GroupName] ON [sch_ECOTAG].[T_Group]
 (
     [GRP_Name] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
-GO
-
-DECLARE @firstUserId uniqueidentifier
-DECLARE @secondUserId uniqueidentifier
-DECLARE @thirdUserId uniqueidentifier
-
-DECLARE @firstGroupId uniqueidentifier
-DECLARE @secondGroupId uniqueidentifier
-DECLARE @thirdGroupId uniqueidentifier
-
-DECLARE @firstProjectId uniqueidentifier
-DECLARE @secondProjectId uniqueidentifier
-DECLARE @thirdProjectId uniqueidentifier
-
-SET @firstUserId = newid()
-SET @secondUserId = newid()
-SET @thirdUserId = newid()
-
-SET @firstGroupId = newid()
-SET @secondGroupId = newid()
-SET @thirdGroupId = newid()
-
-SET @firstProjectId = newid()
-SET @secondProjectId = newid()
-SET @thirdProjectId = newid()
-
-INSERT INTO [sch_ECOTAG].[T_User]([USR_Id],[USR_Email],[USR_NameIdentifier]) VALUES (@firstUserId,"first@gmail.com","S111111")
-INSERT INTO [sch_ECOTAG].[T_User]([USR_Id],[USR_Email],[USR_NameIdentifier]) VALUES (@secondUserId,"second@gmail.com","S222222")
-INSERT INTO [sch_ECOTAG].[T_User]([USR_Id],[USR_Email],[USR_NameIdentifier]) VALUES (@thirdUserId,"third@gmail.com","S333333")
-
-INSERT INTO [sch_ECOTAG].[T_Group]([GRP_Id],[GRP_Name],[GRP_CREATORNAMEIDENTIFIER],[GRP_CREATEDATE],[GRP_UpdateDate]) VALUES (@firstGroupId, "firstgroup", "S111111", 637831187822285511, 637831187822285511)
-INSERT INTO [sch_ECOTAG].[T_Group]([GRP_Id],[GRP_Name],[GRP_CREATORNAMEIDENTIFIER],[GRP_CREATEDATE],[GRP_UpdateDate]) VALUES (@secondGroupId, "secondgroup", "S111111", 637831187625235412, 637831187822285511)
-INSERT INTO [sch_ECOTAG].[T_Group]([GRP_Id],[GRP_Name],[GRP_CREATORNAMEIDENTIFIER],[GRP_CREATEDATE],[GRP_UpdateDate]) VALUES (@thirdGroupId, "thirdgroup", "S222222", 637831187822285511, 637831187822285511)
-
-INSERT INTO [sch_ECOTAG].[T_GroupUsers]([GPU_Id],[GRP_Id],[USR_Id]) VALUES (newid(), @firstGroupId, @firstUserId)
-INSERT INTO [sch_ECOTAG].[T_GroupUsers]([GPU_Id],[GRP_Id],[USR_Id]) VALUES (newid(), @firstGroupId, @secondUserId)
-INSERT INTO [sch_ECOTAG].[T_GroupUsers]([GPU_Id],[GRP_Id],[USR_Id]) VALUES (newid(), @firstGroupId, @thirdUserId)
-INSERT INTO [sch_ECOTAG].[T_GroupUsers]([GPU_Id],[GRP_Id],[USR_Id]) VALUES (newid(), @secondGroupId, @secondUserId)
-
 GO
 
 USE [ecotag]

@@ -20,7 +20,7 @@ public class GroupModel
     public string Name { get; set; }
     
     [Column("GRP_CreatorNameIdentifier")]
-    [MaxLength(32)]
+    [MaxLength(64)]
     [MinLength(1)]
     public string CreatorNameIdentifier { get; set; }
     

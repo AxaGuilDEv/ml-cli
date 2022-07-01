@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -20,12 +21,8 @@ public class UsersRepository
     
     public async Task<List<UserDataModel>> GetAllUsersAsync()
     {
-        var resultList = new List<UserDataModel>();
-        var userModelEnum = _groupsContext.Users.AsAsyncEnumerable();
-        await foreach (var user in userModelEnum)
-        {
-            resultList.Add(user.ToListUserDataModel());
-        }
+        var userModelEnum = await _groupsContext.Users.ToListAsync();
+        var resultList = userModelEnum.Select(userModel => userModel.ToListUserDataModel()).ToList();
         return resultList;
     }
 

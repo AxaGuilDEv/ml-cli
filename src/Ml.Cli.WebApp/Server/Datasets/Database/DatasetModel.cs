@@ -28,7 +28,7 @@ public class DatasetModel
     [Column("GRP_Id")] public Guid GroupId { get; set; }
 
     [Column("DTS_CreatorNameIdentifier")]
-    [MaxLength(32)]
+    [MaxLength(64)]
     [MinLength(1)]
     public string CreatorNameIdentifier { get; set; }
 

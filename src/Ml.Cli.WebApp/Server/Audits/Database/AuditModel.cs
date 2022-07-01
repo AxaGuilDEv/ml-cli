@@ -22,7 +22,7 @@ public class AuditModel
     public string Diff { get; set; }
     
     [Column("AUD_NameIdentifier")]
-    [MaxLength(32)]
+    [MaxLength(64)]
     [MinLength(1)]
     public string NameIdentifier { get; set; }
 

@@ -10,7 +10,7 @@ export const withEnvironment = Component => props => (
 );
 
 const getEnvironmentData = async () => {
-  const fileName = process.env.NODE_ENV === 'development' ? `environment.dev-custom.json` : 'environment.json';
+  const fileName = process.env.NODE_ENV === 'development' ? `environment.dev.json` : 'environment.json';
   const data = await fetch(`/${fileName}`);
   return data.json();
 };

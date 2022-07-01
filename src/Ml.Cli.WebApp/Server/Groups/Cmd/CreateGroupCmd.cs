@@ -23,7 +23,7 @@ public record CreateGroupInput
     [RegularExpression(@"^[a-zA-Z0-9-_]*$")]
     public string Name { get; set; }
     
-    [MaxLength(32)]
+    [MaxLength(64)]
     [MinLength(1)]
     public string CreatorNameIdentifier { get; set; }
     
